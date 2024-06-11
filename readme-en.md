@@ -1,6 +1,14 @@
 ### Explanation
 
-Explanation with images of my procedure.
+Here's what I want to do:
+
+- Create a c++ application (here, open the calculator)
+- Output shellcode with donut from opencalc.exe
+- Output the bytes of this shellcode
+- Decompile putty, put the shellcode inside
+- Execute the shellcode, then move on to running putty.
+
+Double-click on putty to open both the calculator and putty.
 
 ### Go
 
