@@ -1,4 +1,4 @@
-### Explanation
+### PoC
 
 Here's what I want to do:
 
@@ -10,6 +10,7 @@ Here's what I want to do:
 
 Double-click on putty to open both the calculator and putty.
 
+### Quick explanation:
 
 From what I understand donut, generates a shellcode of the given PE. But also a loader that will be used to inject the shellcode into the program.
 
@@ -20,7 +21,24 @@ The loader “creates” the original program (bytes for bytes) in the putty thr
 The shellcode has almost no bytes in common with the PE (opencalc.exe).
 However, once the loader has loaded the shellcode into the program, the bytes are similar to the original decompiled PE (opencalc.exe).
 
-### Problems encountered :
+A shellcode includes the program's execution bytes. These bytes have absolutely nothing to do with the original program bytes, they are build bytes for the shellcode.
+
+A loader is around the shellcode to load it into putty (without this there is no entry point).
+
+
+Every compiled program has a code return for execution. this return will kill the thread.
+
+Our program (opencalc.exe) has a return 5520.
+
+The loader around the shellcode also has a return (it can also be blocked with an option).
+
+
+The challenge is to load the shellcode (with or without return) into putty. Continue executing the shellcode until the end, or in a new thread that won't kill itself, if you like.
+Finally, once this is done, we'll jump to the first instrctions of putty to continue executing putty.
+
+
+
+### Problems encountered :
 
 It's almost impossible (or at least I haven't found it) to read the entire loader and find the exact location of the shellcode (it's not the same bytes as opencalc.exe) where the kill process instrcutions are located.
 
