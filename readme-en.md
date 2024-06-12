@@ -47,7 +47,7 @@ Finally, once this is done, we'll jump to the first instrctions of putty to cont
 The problem is that the loader loads the shellcode into an area of memory that can't be written to, so you can't jump from here.
 
 
-- I modified `retrun 5520` by decompiling `opencalc.exe`, replaced the return bytes by just null bytes, then patched the .exe.
+- I modified `return 5520` by decompiling `opencalc.exe`, replaced the return bytes by just null bytes, then patched the .exe.
     - I take out the shellcode, paste and patch putty. And it does have a null bytes exception. But there are still some in the thread that can't be written. So it's impossible to change
 
 
