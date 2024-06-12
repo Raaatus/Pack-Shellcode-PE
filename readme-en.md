@@ -28,7 +28,7 @@ A loader is around the shellcode to load it into putty (without this there is no
 
 Every compiled program has a code return for execution. this return will kill the thread.
 
-Our program (opencalc.exe) has a return 5520.
+Our program (opencalc.exe) has a `return 5520`.
 
 The loader around the shellcode also has a return (it can also be blocked with an option).
 
@@ -40,8 +40,18 @@ Finally, once this is done, we'll jump to the first instrctions of putty to cont
 
 ### Problems encountered :
 
-It's almost impossible (or at least I haven't found it) to read the entire loader and find the exact location of the shellcode (it's not the same bytes as opencalc.exe) where the kill process instrcutions are located.
+- It's almost impossible (or at least I haven't found it) to read the entire loader and find the exact location of the shellcode (it's not the same bytes as opencalc.exe) where the kill process instrcutions are located.
 
+- I tried to modify the `return 5520` of my program by decompiling it, because it's necessarily the first return that arrives.
+    - If I can jump to the first putty instruction instead of doing the `5520 return`, I've got it.
+The problem is that the loader loads the shellcode into an area of memory that can't be written to, so you can't jump from here.
+
+
+- I modified retrun 5520 by decompiling opencalc.exe, replaced the return bytes by just null bytes, then patched the .exe.
+    - I take out the shellcode, paste and patch putty. And it does have a null bytes exception. But there are still some in the thread that can't be written. So it's impossible to change
+
+
+- Based on the above principle, I thought I'd jump to the offset of the first putty instruction, but directly by decompiling opencalc.exe instead of the null bytes. This time the problem is that opencalc.exe doesn't have the putty reference, so I'm going to jump blindly into an offset that's generated randomly with each new execution.
 
 
 ### Go
