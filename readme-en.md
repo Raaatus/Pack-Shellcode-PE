@@ -10,6 +10,22 @@ Here's what I want to do:
 
 Double-click on putty to open both the calculator and putty.
 
+
+From what I understand donut, generates a shellcode of the given PE. But also a loader that will be used to inject the shellcode into the program.
+
+You end up with 25 kB of bytes used for this, and it takes a long time to analyze it properly.
+
+The loader “creates” the original program (bytes for bytes) in the putty thread.
+
+The shellcode has almost no bytes in common with the PE (opencalc.exe).
+However, once the loader has loaded the shellcode into the program, the bytes are similar to the original decompiled PE (opencalc.exe).
+
+### Problems encountered :
+
+It's almost impossible (or at least I haven't found it) to read the entire loader and find the exact location of the shellcode (it's not the same bytes as opencalc.exe) where the kill process instrcutions are located.
+
+
+
 ### Go
 
 Here is the calculator code, I intentionally put a return with the number 5520 to easily find it in the hex.
