@@ -14,23 +14,15 @@ Double-cliquez sur putty pour ouvrir la calculatrice et putty.
 
 D'après ce que j'ai compris, donut génère un shellcode du PE donné. Mais aussi un loader qui sera utilisé pour injecter le shellcode dans le programme.
 
-On se retrouve avec 25 kB d'octets utilisés pour cela, et il faut beaucoup de temps pour l'analyser correctement.
-
 Le chargeur "crée" le programme original (octets par octets) dans le thread putty.
 
-Le shellcode n'a pratiquement aucun octet en commun avec le PE (`opencalc.exe`).
-Cependant, une fois que le chargeur a chargé le shellcode dans le programme, les octets sont similaires au PE original décompilé (`opencalc.exe`).
-
-Un shellcode comprend les octets d'exécution du programme. Ces octets n'ont absolument rien à voir avec les octets du programme original, ce sont des octets de construction pour le shellcode.
-
-Un chargeur se trouve autour du shellcode pour le charger dans Putty (sans lui, il n'y a pas de point d'entrée).
-
+Un chargeur se trouve autour du shellcode pour le charger dans Putty (sans lui, il n'y a pas de point d'entrée)
 
 Chaque programme compilé a un code de retour pour l'exécution. ce retour va tuer le thread.
 
 Notre programme (`opencalc.exe`) a un `return 5520`.
 
-avec une option).
+avec une option)
 
 
 Le défi consiste à charger le shellcode (avec ou sans retour) dans putty. Continuez à exécuter le shellcode jusqu'à la fin, ou dans un nouveau thread qui ne se tuera pas tout seul, si vous le souhaitez.
@@ -39,8 +31,6 @@ Enfin, une fois ceci fait, nous passerons aux premières instructions de putty p
 
 
 ### Problèmes rencontrés :
-
-- Il est presque impossible (ou du moins je ne l'ai pas trouvé) de lire tout le loader et de trouver l'emplacement exact du shellcode (ce ne sont pas les mêmes octets que opencalc.exe) où se trouvent les instrcutions du processus kill.
 
 - J'ai essayé de modifier le `return 5520` de mon programme en le décompilant, car c'est nécessairement le premier return qui arrive.
     - Si je peux passer à la première instruction de putty au lieu de faire le `return 5520`, je l'ai.
@@ -53,6 +43,11 @@ Le problème est que le loader charge le shellcode dans une zone de la mémoire 
 
 - En me basant sur le principe ci-dessus, j'ai pensé sauter à l'offset de la première instruction putty, mais directement en décompilant `opencalc.exe` au lieu des octets nuls. Cette fois-ci, le problème est que `opencalc.exe` n'a pas la référence putty, donc je vais sauter aveuglément dans un offset qui est généré aléatoirement à chaque nouvelle exécution.
 
+
+- Enfin j'ai généré le shellcode byte par byte, je retrouve les bytes qui servent a faire le `return 5520`.
+    - En changeant ces bytes par un jump sur les instructions de putty, on obtient une exception.
+
+C'est cette derniere methode que je vais montrer par en dessosu.
 
 ### Go
 
@@ -70,74 +65,68 @@ int main() {
 }
 
 ```
-![opencalc.exe](./img/opencalc.gif).
+![opencalc.exe](./img/opencalc.gif)
 
 Ensuite on genere le shellcode
 
 - On precise :
     - `-a 1` x86 application
-    - `-z 2` Compression aPlib
-    - `-x 3` Block dans le thread
+    - `-k 2` Keep all
+    - `-e 1` No Encryption
+    - `-b 1` No bypass AV
     - `-f 1` Format Binairies
 
-![opencalc.exe](./img/shellcode.png).
+![opencalc.exe](./img/shellcode1.1.png)
 
 
 De la on va sortir les bytes du shellcodes avec HxD.  CTRL + A
 
 
-![opencalc.exe](./img/hxd.png).
+![opencalc.exe](./img/hxd.png)
 
 
 On va décompiler Putty modifié avec le code cave (ici il le sera deja) c'est `.codeex`.
 Et copié le shellcode dans la bonne zone de mémoire.
 - J'ajoute `pushad` et `pushfd` au début de shellcode
 
-![opencalc.exe](./img/puttyshell.gif).
+![opencalc.exe](./img/puttyshell.gif)
 
 Ensuite je vais modifier certaines instuctions à coté de l'entry point de putty.
 Il faut sauvegarder les instructions pour les remettres a la fin du shellcode.
 
 On va jump directement dans le shellcode.
 
-![opencalc.exe](./img/puttyshelljmp.gif).
+![opencalc.exe](./img/puttyshelljmp.gif)
 
 Enfin a la fin du shellcode on va remettre les lignes changées durant le jump dans le shellcode. Ainsi on jump de nouveau au `push 0x1` pour revenir a l'endroit ou on a sauté au shellcode
 
-![opencalc.exe](./img/shelljmp.png).
+![opencalc.exe](./img/shelljmp.png)
 
 
-A partir de la, je suis bloqué il faut retirer le `return 5520` de `opencalc.exe`. Et celui du loader, mais si je peux trouver l'endroit du shellcode qui build le `return 5520`, j'aurais juste a faire le jump a la fin du shellcode a cet endroit.
+Enfin on va comparer les bytes du shellcode a celui du programme original, on va ensuite trouver l'endroit ou le programme `opencalc.exe` se termine. (je le mets a l'endroit du exit)
+
+On décompile `opencalc.exe`, et on cherche les bytes dans le shellcode.
+
+![opencalc.exe](./img/comparebyte.gif)
 
 
-## Troobleshooting
+Un fois trouvé on jump simplement sur les instructions de putty qu'on a remise.
+Enfin on patch le projet.
 
-### Si je lance putty avec ce que je viens de faire au dessus : 
 
-![opencalc.exe](./img/puttyplusshell.gif).
+![opencalc.exe](./img/jumpandpatch.png)
 
-- Le code de retour est 5520, on est dans sur le return du programme.
+## FIN
 
-c'est trop du d'aller au bout du programme il y a trop d'instruction mais aps de panique regardez la deuxieme pour comprendre que meme si je trouve le return dans le tread, je ne pourrais pas ecrire.
+Dans la théorie, on peut avoir la calculette avant puis ça jump sur putty et le ui de putty se lance. 
 
-### Si je casse le return 5520 directement dans le programme
 
-On décompile opencalc.exe.
-On va remplacer le `Exit` par des null bytes afin de provoquer une exeception.
+Dans les faits la calculette se lance, et il y a une exception a la fin du shellcode de `opencalc.exe`.
 
-![opencalc.exe](./img/shellexit.png).
+A savoir que l'adresse de l'exception change a chaque nouvelle execution et des fois on est sur des plages qui n'existent pas.
 
-J'en sors le shellcode et le je le mets dans putty similaire au tuto du dessus.
 
-Puis on va décompiler le Putty avec le shellcode avec l'exception des null bytes
+L'execution en decompilant : 
 
-![opencalc.exe](./img/shellcodenullbytes.gif).
 
-On tombe bien sur nos null bytes à partir de la ca serait gagné si a la place de ces null bytes je pouvais faire un jump vers la fin du shellcode (ou il a les instructions putty).
-
-Mais la zone de mémoire etant le main thread, n'est pas ecrivable.
-
-![opencalc.exe](./img/errorecritable.gif).
-
-![opencalc.exe](./img/error1.png).
-![opencalc.exe](./img/error2.png).
+![opencalc.exe](./img/exeception.gif)

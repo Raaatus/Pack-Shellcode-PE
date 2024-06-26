@@ -1,58 +1,6 @@
-### PoC
+### Explanation
 
-Here's what I want to do:
-
-- Create a c++ application (here, open the calculator)
-- Output shellcode with donut from `opencalc.exe`
-- Output the bytes of this shellcode
-- Decompile putty, put the shellcode inside
-- Execute the shellcode, then move on to running putty.
-
-Double-click on putty to open both the calculator and putty.
-
-### Quick explanation:
-
-From what I understand donut, generates a shellcode of the given PE. But also a loader that will be used to inject the shellcode into the program.
-
-You end up with 25 kB of bytes used for this, and it takes a long time to analyze it properly.
-
-The loader “creates” the original program (bytes for bytes) in the putty thread.
-
-The shellcode has almost no bytes in common with the PE (`opencalc.exe`).
-However, once the loader has loaded the shellcode into the program, the bytes are similar to the original decompiled PE (`opencalc.exe`).
-
-A shellcode includes the program's execution bytes. These bytes have absolutely nothing to do with the original program bytes, they are build bytes for the shellcode.
-
-A loader is around the shellcode to load it into putty (without this there is no entry point).
-
-
-Every compiled program has a code return for execution. this return will kill the thread.
-
-Our program (`opencalc.exe`) has a `return 5520`.
-
-The loader around the shellcode also has a return (it can also be blocked with an option).
-
-
-The challenge is to load the shellcode (with or without return) into putty. Continue executing the shellcode until the end, or in a new thread that won't kill itself, if you like.
-Finally, once this is done, we'll jump to the first instrctions of putty to continue executing putty.
-
-
-
-### Problems encountered :
-
-- It's almost impossible (or at least I haven't found it) to read the entire loader and find the exact location of the shellcode (it's not the same bytes as opencalc.exe) where the kill process instrcutions are located.
-
-- I tried to modify the `return 5520` of my program by decompiling it, because it's necessarily the first return that arrives.
-    - If I can jump to the first putty instruction instead of doing the `5520 return`, I've got it.
-The problem is that the loader loads the shellcode into an area of memory that can't be written to, so you can't jump from here.
-
-
-- I modified `return 5520` by decompiling `opencalc.exe`, replaced the return bytes by just null bytes, then patched the .exe.
-    - I take out the shellcode, paste and patch putty. And it does have a null bytes exception. But there are still some in the thread that can't be written. So it's impossible to change
-
-
-- Based on the above principle, I thought I'd jump to the offset of the first putty instruction, but directly by decompiling `opencalc.exe` instead of the null bytes. This time the problem is that `opencalc.exe` doesn't have the putty reference, so I'm going to jump blindly into an offset that's generated randomly with each new execution.
-
+Explanation with images of my procedure.
 
 ### Go
 
