@@ -51,7 +51,7 @@ C'est cette derniere methode que je vais montrer par en dessosu.
 
 ### Go
 
-Voici le code de la calculatrice, j'ai intentionnellement mis un retour avec le nombre 5520 pour le retrouver facilement dans l'hexagone.
+Voici le code de la calculatrice, j'ai intentionnellement mis un retour avec le nombre 5520 pour le retrouver facilement dans l'hexa.
 
 Construit en 32bits avec Visual Studio.
 
