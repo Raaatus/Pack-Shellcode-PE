@@ -4,6 +4,9 @@ L'objectif est d'expliquer comment packer un shellcode dans un PE.
 
 ## Getting started
 
+Coucou mes quoicoubebous d'amours, je dahek, absolument personne ne lit mes repo. Mais c'est pas grave, j'suis heureux d'annoncé qu'après plus d'un an et demi en autodidacte, j'en enfin reussi à mettre ce shellcode dans un PE authentique. Et surtout le comprendre.
+
+
 Pour un maximum de difficulté, on va faire un **PE 64 bits**. Packer un **64 bits** sans tout casser, et on saura **tout packer**.  
 
 ### Prérequis
