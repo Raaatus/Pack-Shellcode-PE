@@ -4,10 +4,9 @@ L'objectif est d'expliquer comment packer un shellcode dans un PE.
 
 ## Getting started
 
-Coucou mes quoicoubebous d'amours, je dahek, absolument personne ne lit mes repo. Mais c'est pas grave, j'suis heureux d'annoncer qu'après plus d'un an et demi en autodidacte, j'ai enfin reussi à mettre ce shellcode dans un PE authentique. Et surtout le comprendre.
-
-
 Pour un maximum de difficulté, on va faire un **PE 64 bits**. Packer un **64 bits** sans tout casser, et on saura **tout packer**.  
+
+Déja familié ? --> **[Aller à la Intermediaire](intermediaire.md)**
 
 ### Prérequis
 
@@ -547,3 +546,7 @@ Même démarche que pour la première partie.
 ### Résultat  
 
 ![plot](./img/puttythreadmessagebox.gif)
+
+## Résultat AV
+
+![alt text](img/intermediaire/resultatav.png)
