@@ -2,9 +2,10 @@
 image_base = 0x14000000
 
 # Adresses en RVA
-source_rva = 0x19e2e1
+source_rva = 0xe7f17
 
-dest_rva = 0xb9744
+
+dest_rva = 0x55db
 
 # Conversion des adresses RVA en VA
 source_va = source_rva + image_base
