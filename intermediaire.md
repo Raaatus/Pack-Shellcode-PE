@@ -2,6 +2,8 @@
 
 L'objectif est d'expliquer comment packer un shellcode dans un PE.
 
+Niveau Avance --> **[Aller à la Avance](details.md)**
+
 ## Getting started
 
 Pour un maximum de difficulté, on va faire un **PE 64 bits**. Packer un **64 bits** sans tout casser, et on saura **tout packer**.  
