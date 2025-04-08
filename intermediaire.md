@@ -10,7 +10,7 @@ Pour un maximum de difficulté, on va faire un **PE 64 bits**. Packer un **64 bi
 
 Ce readme est **intermédiaire** pour comprendre en profondeur les choses.
 
-Déja familié ? --> **[Aller à la Avance](avance.md)**
+Déja familié ? --> **[Aller à la Avance](details.md)**
 
 ### Prérequis
 
