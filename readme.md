@@ -549,4 +549,4 @@ Même démarche que pour la première partie.
 
 ## Résultat AV
 
-![alt text](img/intermediaire/resultatav.png)
+Virus total = 20 / 73
